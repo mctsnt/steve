@@ -69,12 +69,15 @@ public class ChargePointsController {
     // -------------------------------------------------------------------------
 
     protected static final String QUERY_PATH = "/query";
-
+    protected static final String JSON_QUERY_PATH = "/json/query";
+    
     protected static final String DETAILS_PATH = "/details/{chargeBoxPk}";
+    protected static final String JSON_DETAILS_PATH = "/json/details/{chargeBoxPk}";
     protected static final String DELETE_PATH = "/delete/{chargeBoxPk}";
     protected static final String UPDATE_PATH = "/update";
     protected static final String ADD_PATH = "/add";
-
+    protected static final String JSON_PATH = "/json";
+    
     protected static final String ADD_SINGLE_PATH = "/add/single";
     protected static final String ADD_BATCH_PATH = "/add/batch";
 
@@ -88,16 +91,28 @@ public class ChargePointsController {
     // HTTP methods
     // -------------------------------------------------------------------------
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(method = {RequestMethod.POST,RequestMethod.GET})
     public String getOverview(Model model) {
         initList(model, new ChargePointQueryForm());
         return "data-man/chargepoints";
     }
+    
+    @RequestMapping(value = JSON_PATH, method = RequestMethod.GET)
+    public String getJsonChargepoints(Model model) {
+        initList(model, new ChargePointQueryForm());
+        return "data-man/chargepointsj";
+    }
 
-    @RequestMapping(value = QUERY_PATH, method = RequestMethod.GET)
+    @RequestMapping(value = QUERY_PATH, method = {RequestMethod.POST,RequestMethod.GET})
     public String getQuery(@ModelAttribute(PARAMS) ChargePointQueryForm params, Model model) {
         initList(model, params);
         return "data-man/chargepoints";
+    }
+    
+    @RequestMapping(value = JSON_QUERY_PATH, method = {RequestMethod.POST,RequestMethod.GET})
+    public String getQueryInJson(@ModelAttribute(PARAMS) ChargePointQueryForm params, Model model) {
+        initList(model, params);
+        return "data-man/chargepointsj";
     }
 
     private void initList(Model model, ChargePointQueryForm params) {
@@ -106,7 +121,7 @@ public class ChargePointsController {
         model.addAttribute("unknownList", chargePointHelperService.getUnknownChargePoints());
     }
 
-    @RequestMapping(value = DETAILS_PATH, method = RequestMethod.GET)
+    @RequestMapping(value = DETAILS_PATH, method = {RequestMethod.POST,RequestMethod.GET})
     public String getDetails(@PathVariable("chargeBoxPk") int chargeBoxPk, Model model) {
         ChargePoint.Details cp = chargePointRepository.getDetails(chargeBoxPk);
 
@@ -130,6 +145,33 @@ public class ChargePointsController {
 
         return "data-man/chargepointDetails";
     }
+
+
+    @RequestMapping(value = JSON_DETAILS_PATH, method = {RequestMethod.POST,RequestMethod.GET})
+    public String getDetailsInJson(@PathVariable("chargeBoxPk") int chargeBoxPk, Model model) {
+        ChargePoint.Details cp = chargePointRepository.getDetails(chargeBoxPk);
+
+        ChargePointForm form = new ChargePointForm();
+        form.setChargeBoxPk(cp.getChargeBox().getChargeBoxPk());
+        form.setChargeBoxId(cp.getChargeBox().getChargeBoxId());
+        form.setNote(cp.getChargeBox().getNote());
+        form.setDescription(cp.getChargeBox().getDescription());
+        form.setLocationLatitude(cp.getChargeBox().getLocationLatitude());
+        form.setLocationLongitude(cp.getChargeBox().getLocationLongitude());
+        form.setInsertConnectorStatusAfterTransactionMsg(cp.getChargeBox().getInsertConnectorStatusAfterTransactionMsg());
+        form.setAdminAddress(cp.getChargeBox().getAdminAddress());
+        form.setRegistrationStatus(cp.getChargeBox().getRegistrationStatus());
+
+        form.setAddress(ControllerHelper.recordToDto(cp.getAddress()));
+
+        model.addAttribute("chargePointForm", form);
+        model.addAttribute("cp", cp);
+        model.addAttribute("registrationStatusList", getRegistrationStatusList(cp.getChargeBox()));
+        addCountryCodes(model);
+
+        return "data-man/chargepointDetailsj";
+    }
+
 
     private List<String> getRegistrationStatusList(ChargeBoxRecord chargeBoxRecord) {
         if (chargeBoxRecord.getOcppProtocol() == null) {

@@ -57,11 +57,8 @@ public class OcppTagsController {
     // -------------------------------------------------------------------------
 
     protected static final String QUERY_PATH = "/query";
-    protected static final String JSON_QUERY_PATH = "/json/query";
-    protected static final String JSON_PATH = "/json";
-    
+
     protected static final String DETAILS_PATH = "/details/{ocppTagPk}";
-    protected static final String JSON_DETAILS_PATH = "/json/details/{ocppTagPk}";
     protected static final String DELETE_PATH = "/delete/{ocppTagPk}";
     protected static final String UPDATE_PATH = "/update";
     protected static final String ADD_PATH = "/add";
@@ -87,19 +84,6 @@ public class OcppTagsController {
         initList(model, params);
         return "data-man/ocppTags";
     }
-    
-    @RequestMapping(value = JSON_PATH, method = RequestMethod.GET)
-    public String getJSON(Model model) {
-        initList(model, new OcppTagQueryForm());
-        return "data-man/ocppTagsj";
-    }
-
-    @RequestMapping(value = JSON_QUERY_PATH, method = RequestMethod.GET)
-    public String getQueryJSON(@ModelAttribute(PARAMS) OcppTagQueryForm params, Model model) {
-        initList(model, params);
-        return "data-man/ocppTagsj";
-    }
-    
 
     @RequestMapping(value = DETAILS_PATH, method = RequestMethod.GET)
     public String getDetails(@PathVariable("ocppTagPk") int ocppTagPk, Model model) {
@@ -127,34 +111,6 @@ public class OcppTagsController {
         model.addAttribute("ocppTagForm", form);
         setTags(model);
         return "data-man/ocppTagDetails";
-    }
-    
-    @RequestMapping(value = JSON_DETAILS_PATH, method = RequestMethod.GET)
-    public String getDetailsJSON(@PathVariable("ocppTagPk") int ocppTagPk, Model model) {
-        OcppTagActivityRecord record = ocppTagRepository.getRecord(ocppTagPk);
-
-        OcppTagForm form = new OcppTagForm();
-        form.setOcppTagPk(record.getOcppTagPk());
-        form.setIdTag(record.getIdTag());
-
-        DateTime expiryDate = record.getExpiryDate();
-        if (expiryDate != null) {
-            form.setExpiration(expiryDate.toLocalDateTime());
-        }
-
-        form.setMaxActiveTransactionCount(record.getMaxActiveTransactionCount());
-        form.setNote(record.getNote());
-
-        String parentIdTag = record.getParentIdTag();
-        if (parentIdTag == null) {
-            parentIdTag = ControllerHelper.EMPTY_OPTION;
-        }
-        form.setParentIdTag(parentIdTag);
-
-        model.addAttribute("activeTransactionCount", record.getActiveTransactionCount());
-        model.addAttribute("ocppTagForm", form);
-        setTags(model);
-        return "data-man/ocppTagDetailsj";
     }
 
     @RequestMapping(value = ADD_PATH, method = RequestMethod.GET)

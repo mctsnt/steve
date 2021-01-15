@@ -68,11 +68,11 @@ public class TransactionsReservationsController {
     private static final String RESERVATIONS_PATH = "/reservations";
     private static final String RESERVATIONS_QUERY_PATH = "/reservations/query";
     
-    private static final String JSON_TRANSACTIONS_PATH = "/json/transactions";
-    private static final String JSON_TRANSACTIONS_DETAILS_PATH = "/json/transactions/details/{transactionPk}";
-    private static final String JSON_TRANSACTIONS_QUERY_PATH = "/json/transactions/query";
-    private static final String JSON_RESERVATIONS_PATH = "/json/reservations";
-    private static final String JSON_RESERVATIONS_QUERY_PATH = "/json/reservations/query";
+    private static final String JSON_TRANSACTIONS_PATH = "/transactions/json";
+    private static final String JSON_TRANSACTIONS_DETAILS_PATH = "/transactions/json/details/{transactionPk}";
+    private static final String JSON_TRANSACTIONS_QUERY_PATH = "/transactions/json/query";
+    private static final String JSON_RESERVATIONS_PATH = "/reservations/json";
+    private static final String JSON_RESERVATIONS_QUERY_PATH = "/reservations/json/query";
 
     // -------------------------------------------------------------------------
     // HTTP methods

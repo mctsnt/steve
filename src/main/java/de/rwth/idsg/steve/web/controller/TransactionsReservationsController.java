@@ -67,6 +67,12 @@ public class TransactionsReservationsController {
     private static final String TRANSACTIONS_QUERY_PATH = "/transactions/query";
     private static final String RESERVATIONS_PATH = "/reservations";
     private static final String RESERVATIONS_QUERY_PATH = "/reservations/query";
+    
+    private static final String JSON_TRANSACTIONS_PATH = "/transactions/json";
+    private static final String JSON_TRANSACTIONS_DETAILS_PATH = "/transactions/json/details/{transactionPk}";
+    private static final String JSON_TRANSACTIONS_QUERY_PATH = "/transactions/json/query";
+    private static final String JSON_RESERVATIONS_PATH = "/reservations/json";
+    private static final String JSON_RESERVATIONS_QUERY_PATH = "/reservations/json/query";
 
     // -------------------------------------------------------------------------
     // HTTP methods
@@ -120,6 +126,51 @@ public class TransactionsReservationsController {
             return "data-man/transactions";
         }
     }
+    
+    @RequestMapping(value = JSON_TRANSACTIONS_PATH)
+    public String getTransactionsJSON(Model model) {
+        TransactionQueryForm params = new TransactionQueryForm();
+        initList(model);
+
+        model.addAttribute("transList", transactionRepository.getTransactions(params));
+        model.addAttribute(PARAMS, params);
+        return "data-man/transactionsj";
+    }
+
+
+    @RequestMapping(value = JSON_TRANSACTIONS_DETAILS_PATH)
+    public String getTransactionDetailsJSON(@PathVariable("transactionPk") int transactionPk, Model model) {
+        model.addAttribute("details", transactionRepository.getDetails(transactionPk));
+        return "data-man/transactionDetailsj";
+    }
+
+    @RequestMapping(value = JSON_TRANSACTIONS_QUERY_PATH)
+    public String getTransactionsQueryJSON(@Valid @ModelAttribute(PARAMS) TransactionQueryForm params,
+                                       BindingResult result, Model model,
+                                       HttpServletResponse response) throws IOException {
+        if (result.hasErrors()) {
+            initList(model);
+            model.addAttribute(PARAMS, params);
+            return "data-man/transactionsj";
+        }
+
+        if (params.isReturnCSV()) {
+            String fileName = "transactions.csv";
+            String headerKey = "Content-Disposition";
+            String headerValue = String.format("attachment; filename=\"%s\"", fileName);
+            response.setContentType("text/csv");
+            response.setHeader(headerKey, headerValue);
+            transactionRepository.writeTransactionsCSV(params, response.getWriter());
+            return null;
+
+        } else {
+            model.addAttribute("transList", transactionRepository.getTransactions(params));
+            initList(model);
+            model.addAttribute(PARAMS, params);
+            return "data-man/transactionsj";
+        }
+    }
+    
 
     @RequestMapping(value = RESERVATIONS_PATH)
     public String getReservations(Model model) {
@@ -142,6 +193,29 @@ public class TransactionsReservationsController {
         model.addAttribute(PARAMS, params);
         return "data-man/reservations";
     }
+    
+    @RequestMapping(value = JSON_RESERVATIONS_PATH)
+    public String getReservationsJSON(Model model) {
+        ReservationQueryForm params = new ReservationQueryForm();
+        initResList(model);
+
+        model.addAttribute("reservList", reservationRepository.getReservations(params));
+        model.addAttribute(PARAMS, params);
+        return "data-man/reservationsj";
+    }
+
+    @RequestMapping(value = JSON_RESERVATIONS_QUERY_PATH)
+    public String getReservationsQueryJSON(@Valid @ModelAttribute(PARAMS) ReservationQueryForm params,
+                                      BindingResult result, Model model) throws IOException {
+        if (!result.hasErrors()) {
+            model.addAttribute("reservList", reservationRepository.getReservations(params));
+        }
+
+        initResList(model);
+        model.addAttribute(PARAMS, params);
+        return "data-man/reservationsj";
+    }
+    
 
     private void initList(Model model) {
         model.addAttribute("cpList", chargePointRepository.getChargeBoxIds());

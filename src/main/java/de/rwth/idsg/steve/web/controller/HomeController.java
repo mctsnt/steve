@@ -53,6 +53,8 @@ public class HomeController {
     // -------------------------------------------------------------------------
 
     private static final String HOME_PREFIX = "/home";
+    
+    private static final String DOCUMENTATION_PREFIX = "/documentation";
 
     private static final String OCPP_JSON_STATUS = HOME_PREFIX + "/ocppJsonStatus";
     private static final String CONNECTOR_STATUS_PATH = HOME_PREFIX + "/connectorStatus";
@@ -66,6 +68,13 @@ public class HomeController {
         model.addAttribute("stats", chargePointHelperService.getStats());
         return "home";
     }
+    
+    @RequestMapping(value = DOCUMENTATION_PREFIX)
+    public String getDocumentation(Model model) {
+        model.addAttribute("stats", chargePointHelperService.getStats());
+        return "documentation";
+    }
+
 
     @RequestMapping(value = CONNECTOR_STATUS_PATH)
     public String getConnectorStatus(Model model) {

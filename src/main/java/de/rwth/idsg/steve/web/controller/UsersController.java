@@ -54,7 +54,10 @@ public class UsersController {
     // -------------------------------------------------------------------------
 
     private static final String QUERY_PATH = "/query";
-
+    private static final String JSON_QUERY_PATH = "/json/query";
+    private static final String JSON_PATH = "/json";
+    private static final String JSON_DETAILS_PATH = "/json/details/{userPk}";
+	
     private static final String DETAILS_PATH = "/details/{userPk}";
     private static final String DELETE_PATH = "/delete/{userPk}";
     private static final String UPDATE_PATH = "/update";
@@ -74,6 +77,18 @@ public class UsersController {
     public String getQuery(@ModelAttribute(PARAMS) UserQueryForm params, Model model) {
         initList(model, params);
         return "data-man/users";
+    }
+    
+    @RequestMapping(value = JSON_PATH, method = RequestMethod.GET)
+    public String getJsonUsers(Model model) {
+        initList(model, new UserQueryForm());
+        return "data-man/usersj";
+    }
+
+    @RequestMapping(value = JSON_QUERY_PATH, method = RequestMethod.GET)
+    public String getQueryInJson(@ModelAttribute(PARAMS) UserQueryForm params, Model model) {
+        initList(model, params);
+        return "data-man/usersj";
     }
 
     private void initList(Model model, UserQueryForm params) {
@@ -101,6 +116,28 @@ public class UsersController {
         setTags(model);
         return "data-man/userDetails";
     }
+    
+    @RequestMapping(value = JSON_DETAILS_PATH, method = RequestMethod.GET)
+    public String getDetailsInJson(@PathVariable("userPk") int userPk, Model model) {
+        User.Details details = userRepository.getDetails(userPk);
+
+        UserForm form = new UserForm();
+        form.setUserPk(details.getUserRecord().getUserPk());
+        form.setFirstName(details.getUserRecord().getFirstName());
+        form.setLastName(details.getUserRecord().getLastName());
+        form.setBirthDay(details.getUserRecord().getBirthDay());
+        form.setPhone(details.getUserRecord().getPhone());
+        form.setSex(UserSex.fromDatabaseValue(details.getUserRecord().getSex()));
+        form.setEMail(details.getUserRecord().getEMail());
+        form.setNote(details.getUserRecord().getNote());
+        form.setAddress(ControllerHelper.recordToDto(details.getAddress()));
+        form.setOcppIdTag(details.getOcppIdTag().orElse(ControllerHelper.EMPTY_OPTION));
+
+        model.addAttribute("userForm", form);
+        setTags(model);
+        return "data-man/userDetailsj";
+    }
+
 
     @RequestMapping(value = ADD_PATH, method = RequestMethod.GET)
     public String addGet(Model model) {

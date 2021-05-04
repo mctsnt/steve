@@ -48,6 +48,10 @@ public class TaskController {
 
     private static final String TASK_ID_PATH = "/{taskId}";
     private static final String TASK_DETAILS_PATH = TASK_ID_PATH + "/details/{chargeBoxId}/";
+    
+    private static final String JSON_PATH = "/json";
+    private static final String JSON_TASK_ID_PATH = "/json/{taskId}";
+    private static final String JSON_TASK_DETAILS_PATH = JSON_TASK_ID_PATH + "/details/{chargeBoxId}/";
 
     // -------------------------------------------------------------------------
     // HTTP methods
@@ -58,6 +62,13 @@ public class TaskController {
         model.addAttribute("taskList", taskStore.getOverview());
         return "tasks";
     }
+    
+    @RequestMapping(value = JSON_PATH, method = RequestMethod.GET)
+    public String getJsonTasks(Model model) {
+    	model.addAttribute("taskList", taskStore.getOverview());
+        return "tasksj";
+    }
+
 
     @RequestMapping(method = RequestMethod.POST)
     public String clearFinished(Model model) {
@@ -71,6 +82,14 @@ public class TaskController {
         model.addAttribute("taskId", taskId);
         model.addAttribute("task", r);
         return "taskResult";
+    }
+    
+    @RequestMapping(value = JSON_TASK_ID_PATH, method = RequestMethod.GET)
+    public String getTaskDetailsInJson(@PathVariable("taskId") Integer taskId, Model model) {
+        CommunicationTask r = taskStore.get(taskId);
+        model.addAttribute("taskId", taskId);
+        model.addAttribute("task", r);
+        return "taskResultj";
     }
 
     @RequestMapping(value = TASK_DETAILS_PATH, method = RequestMethod.GET)
@@ -105,6 +124,40 @@ public class TaskController {
         model.addAttribute("chargeBoxId", chargeBoxId);
         model.addAttribute("response", response);
         return "GetConfigurationResponse";
+    }
+    
+    @RequestMapping(value = JSON_TASK_DETAILS_PATH, method = RequestMethod.GET)
+    public String getDetailsForChargeBoxInJson(@PathVariable("taskId") Integer taskId,
+                                         @PathVariable("chargeBoxId") String chargeBoxId,
+                                         Model model) {
+
+        CommunicationTask r = taskStore.get(taskId);
+
+        if (r instanceof GetCompositeScheduleTask) {
+            return processForGetCompositeScheduleTaskInJson((GetCompositeScheduleTask) r, chargeBoxId, model);
+        } else if (r instanceof GetConfigurationTask) {
+            return processForGetConfigurationTaskInJson((GetConfigurationTask) r, chargeBoxId, model);
+        } else {
+            throw new SteveException("Task not found");
+        }
+    }
+
+    private String processForGetCompositeScheduleTaskInJson(GetCompositeScheduleTask k, String chargeBoxId, Model model) {
+        RequestResult result = extractResult(k, chargeBoxId);
+        GetCompositeScheduleResponse response = result.getDetails();
+
+        model.addAttribute("chargeBoxId", chargeBoxId);
+        model.addAttribute("response", response);
+        return "op16/GetCompositeScheduleResponsej";
+    }
+    
+    private String processForGetConfigurationTaskInJson(GetConfigurationTask k, String chargeBoxId, Model model) {
+        RequestResult result = extractResult(k, chargeBoxId);
+        GetConfigurationTask.ResponseWrapper response = result.getDetails();
+
+        model.addAttribute("chargeBoxId", chargeBoxId);
+        model.addAttribute("response", response);
+        return "GetConfigurationResponsej";
     }
 
     private static RequestResult extractResult(CommunicationTask<?, ?> task, String chargeBoxId) {

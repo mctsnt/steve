@@ -50,11 +50,18 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
      */
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+    
+    
         auth.inMemoryAuthentication()
             .passwordEncoder(CONFIG.getAuth().getPasswordEncoder())
             .withUser(CONFIG.getAuth().getUserName())
             .password(CONFIG.getAuth().getEncodedPassword())
             .roles("ADMIN");
+            
+        auth.inMemoryAuthentication()
+            .withUser("engie")
+            .password("{noop}password")
+            .roles("ADMIN","USER");
     }
 
     @Override
@@ -82,6 +89,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .logoutUrl(prefix + "signout")
                 .and()
             .httpBasic();
+            
+         
          http
             .csrf().disable();
     }

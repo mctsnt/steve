@@ -69,6 +69,11 @@ public class ChargingProfilesController {
     private static final String DELETE_PATH = "/delete/{chargingProfilePk}";
     private static final String UPDATE_PATH = "/update";
     private static final String ADD_PATH = "/add";
+    
+    private static final String JSON_PATH = "/json";
+    private static final String JSON_QUERY_PATH = "/json/query";
+    private static final String JSON_DETAILS_PATH = "/json/details/{chargingProfilePk}";
+    private static final String JSON_ASSIGNMENTS_PATH = "/json/assignments";
 
     private static final String ASSIGNMENTS_PATH = "/assignments";
 
@@ -89,6 +94,21 @@ public class ChargingProfilesController {
         initList(queryForm, model);
         return "data-man/chargingProfiles";
     }
+    
+    @RequestMapping(value = JSON_PATH, method = RequestMethod.GET)
+    public String getOverviewInJson(Model model) {
+        ChargingProfileQueryForm queryForm = new ChargingProfileQueryForm();
+        model.addAttribute(PARAMS, queryForm);
+        initList(queryForm, model);
+        return "data-man/chargingProfilesj";
+    }
+
+    @RequestMapping(value = JSON_QUERY_PATH, method = RequestMethod.GET)
+    public String getQueryInJson(@ModelAttribute(PARAMS) ChargingProfileQueryForm queryForm, Model model) {
+        initList(queryForm, model);
+        return "data-man/chargingProfilesj";
+    }
+
 
     @RequestMapping(value = ADD_PATH, method = RequestMethod.GET)
     public String addGet(Model model) {
@@ -178,6 +198,52 @@ public class ChargingProfilesController {
         model.addAttribute("cpList", chargePointRepository.getChargeBoxIds());
         model.addAttribute("assignments", repository.getAssignments(form));
         return "data-man/chargingProfileAssignments";
+    }
+    
+    @RequestMapping(value = JSON_DETAILS_PATH, method = RequestMethod.GET)
+    public String getDetailsInJson(@PathVariable("chargingProfilePk") int chargingProfilePk, Model model) {
+        ChargingProfile.Details details = repository.getDetails(chargingProfilePk);
+
+        ChargingProfileRecord profile = details.getProfile();
+        List<ChargingSchedulePeriodRecord> periods = details.getPeriods();
+
+        ChargingProfileForm form = new ChargingProfileForm();
+        form.setChargingProfilePk(profile.getChargingProfilePk());
+        form.setDescription(profile.getDescription());
+        form.setNote(profile.getNote());
+        form.setStackLevel(profile.getStackLevel());
+        form.setChargingProfilePurpose(ChargingProfilePurposeType.fromValue(profile.getChargingProfilePurpose()));
+        form.setChargingProfileKind(ChargingProfileKindType.fromValue(profile.getChargingProfileKind()));
+        form.setRecurrencyKind(profile.getRecurrencyKind() == null ? null : RecurrencyKindType.fromValue(profile.getRecurrencyKind()));
+        form.setValidFrom(DateTimeUtils.toLocalDateTime(profile.getValidFrom()));
+        form.setValidTo(DateTimeUtils.toLocalDateTime(profile.getValidTo()));
+        form.setDurationInSeconds(profile.getDurationInSeconds());
+        form.setStartSchedule(DateTimeUtils.toLocalDateTime(profile.getStartSchedule()));
+        form.setChargingRateUnit(ChargingRateUnitType.fromValue(profile.getChargingRateUnit()));
+        form.setMinChargingRate(profile.getMinChargingRate());
+
+        Map<String, ChargingProfileForm.SchedulePeriod> periodMap = new LinkedHashMap<>();
+        for (ChargingSchedulePeriodRecord rec : periods) {
+            ChargingProfileForm.SchedulePeriod p = new ChargingProfileForm.SchedulePeriod();
+            p.setStartPeriodInSeconds(rec.getStartPeriodInSeconds());
+            p.setPowerLimitInAmperes(rec.getPowerLimitInAmperes());
+            p.setNumberPhases(rec.getNumberPhases());
+
+            periodMap.put(UUID.randomUUID().toString(), p);
+        }
+        form.setSchedulePeriodMap(periodMap);
+
+        model.addAttribute("form", form);
+        return "data-man/chargingProfileDetailsj";
+    }
+
+    @RequestMapping(value = JSON_ASSIGNMENTS_PATH, method = RequestMethod.GET)
+    public String getAssignmentsInJson(@ModelAttribute(PARAMS) ChargingProfileAssignmentQueryForm form, Model model) {
+        model.addAttribute(PARAMS, form);
+        model.addAttribute("profileList", repository.getBasicInfo());
+        model.addAttribute("cpList", chargePointRepository.getChargeBoxIds());
+        model.addAttribute("assignments", repository.getAssignments(form));
+        return "data-man/chargingProfileAssignmentsj";
     }
 
     private void initList(ChargingProfileQueryForm queryForm, Model model) {

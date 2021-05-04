@@ -30,13 +30,21 @@ JSONObject chargingProfAssignment;
 
  	<%
     	String cpid = ""; 
-    	cpid = cpid + (pageContext.getAttribute("chargeboxid")).toString();   
+    	if (pageContext.getAttribute("chargeboxid")!=null){
+    		cpid = cpid + (pageContext.getAttribute("chargeboxid")).toString();   
+    	}
     	String cpconnect = ""; 
-    	cpconnect = cpconnect + (pageContext.getAttribute("connector")).toString();
+    	if (pageContext.getAttribute("connector")!=null){
+    		cpconnect = cpconnect + (pageContext.getAttribute("connector")).toString();
+    	}
     	String cpprofid = ""; 
-    	cpprofid = cpprofid + (pageContext.getAttribute("stack")).toString(); 
+    	if (pageContext.getAttribute("profileid")!=null){
+    		cpprofid = cpprofid + (pageContext.getAttribute("profileid")).toString(); 
+    	}
     	String cpdesc = ""; 
-    	cpdesc = cpdesc + (pageContext.getAttribute("desc")).toString(); 
+    	if (pageContext.getAttribute("desc")!=null){
+    		cpdesc = cpdesc + (pageContext.getAttribute("desc")).toString(); 
+    	}
 
 
 

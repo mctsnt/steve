@@ -38,23 +38,35 @@ JSONObject chargePoint;
 
 <%
 String cbid = ""; 
-cbid = cbid + (String)pageContext.getAttribute("id");   
+if (pageContext.getAttribute("id")!=null)
+	{cbid = cbid + (String)pageContext.getAttribute("id");   }
 String cbendp = ""; 
-cbendp = cbendp + (String)pageContext.getAttribute("endp");
+if (pageContext.getAttribute("endp")!=null)
+	{cbendp = cbendp + (String)pageContext.getAttribute("endp");}
 String cbprot = ""; 
-cbprot = cbprot + (String)pageContext.getAttribute("protoc"); 
-DateTime heartDateFrom = (DateTime)pageContext.getAttribute("heartb");
-String cbheart = heartDateFrom.toString(DateTimeFormat.forPattern("MMM-dd-yyyy HH:mm"));
+if (pageContext.getAttribute("protoc")!=null)
+	{cbprot = cbprot + (String)pageContext.getAttribute("protoc"); }
+String cbheart="";
+if (pageContext.getAttribute("heartb")!=null)
+{
+	DateTime heartDateFrom = (DateTime)pageContext.getAttribute("heartb");
+	cbheart = heartDateFrom.toString(DateTimeFormat.forPattern("MMM-dd-yyyy HH:mm"));
+	}
 String cbcpvend = ""; 
-cbcpvend = cbcpvend + (String)pageContext.getAttribute("cpvend"); 
+if (pageContext.getAttribute("cpvend")!=null)
+	{cbcpvend = cbcpvend + (String)pageContext.getAttribute("cpvend"); }
 String cbcpmodel = ""; 
-cbcpmodel = cbcpmodel + (String)pageContext.getAttribute("cpmodel"); 
+if (pageContext.getAttribute("cpmodel")!=null)
+	{cbcpmodel = cbcpmodel + (String)pageContext.getAttribute("cpmodel"); }
 String cbcpserial = ""; 
-cbcpserial = cbcpserial + (String)pageContext.getAttribute("cpserial"); 
+if (pageContext.getAttribute("cpserial")!=null)
+	{cbcpserial = cbcpserial + (String)pageContext.getAttribute("cpserial"); }
 String cbcdserial = ""; 
-cbcdserial = cbcdserial + (String)pageContext.getAttribute("cdserial"); 
+if (pageContext.getAttribute("cdserial")!=null)
+	{cbcdserial = cbcdserial + (String)pageContext.getAttribute("cdserial"); }
 String cbfwvers = ""; 
-cbfwvers = cbfwvers + (String)pageContext.getAttribute("fwvers"); 
+if (pageContext.getAttribute("fwvers")!=null)
+	{cbfwvers = cbfwvers + (String)pageContext.getAttribute("fwvers"); }
 
 DateTime fwDateFrom=null;
 fwDateFrom = (DateTime)pageContext.getAttribute("fwtime");
@@ -65,15 +77,20 @@ else
 	cbfwtime = "null";
 
 String cbic = ""; 
-cbic = cbic + (String)pageContext.getAttribute("ic"); 
+if (pageContext.getAttribute("ic")!=null)
+	{cbic = cbic + (String)pageContext.getAttribute("ic"); }
 String cbim = ""; 
-cbim = cbim + (String)pageContext.getAttribute("im"); 
+if (pageContext.getAttribute("im")!=null)
+	{cbim = cbim + (String)pageContext.getAttribute("im"); }
 String cbmtype = ""; 
-cbmtype = cbmtype + (String)pageContext.getAttribute("mtype"); 
+if (pageContext.getAttribute("mtype")!=null)
+	{cbmtype = cbmtype + (String)pageContext.getAttribute("mtype"); }
 String cbmserial = ""; 
-cbmserial = cbmserial + (String)pageContext.getAttribute("mserial"); 
+if (pageContext.getAttribute("mserial")!=null)
+	{cbmserial = cbmserial + (String)pageContext.getAttribute("mserial"); }
 String cbdstatus = ""; 
-cbdstatus = cbdstatus + (String)pageContext.getAttribute("dstatus"); 
+if (pageContext.getAttribute("dstatus")!=null)
+	{cbdstatus = cbdstatus + (String)pageContext.getAttribute("dstatus"); }
 
 DateTime diagDateFrom = null;
 String cbdtime = "";

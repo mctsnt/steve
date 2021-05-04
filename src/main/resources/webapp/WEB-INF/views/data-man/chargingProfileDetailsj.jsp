@@ -41,19 +41,25 @@ JSONObject SchedulePeriod;
 
  	<%
     	String cpdesc = ""; 
-    	cpdesc = cpdesc + (String)pageContext.getAttribute("desc");
-    	String cpstack = ""; 
-    	cpstack = cpstack + (pageContext.getAttribute("stack")).toString();
+    	if (pageContext.getAttribute("desc")!=null)
+    		{cpdesc = cpdesc + (String)pageContext.getAttribute("desc");}
+    	String cpstack = "";
+    	if (pageContext.getAttribute("stack")!=null) 
+    		{cpstack = cpstack + (pageContext.getAttribute("stack")).toString();}
     	
     	
     	String cppurp = ""; 
-    	cppurp = cppurp + (pageContext.getAttribute("purpose")).toString(); 
+    	if (pageContext.getAttribute("purpose")!=null)
+    		{cppurp = cppurp + (pageContext.getAttribute("purpose")).toString(); }
     	String cppkind = ""; 
-    	cppkind = cppkind + (pageContext.getAttribute("Profkind")).toString();   
+    	if (pageContext.getAttribute("Profkind")!=null)
+    		{cppkind = cppkind + (pageContext.getAttribute("Profkind")).toString();  }
     	String cprkind = ""; 
-    	cprkind = cprkind + (pageContext.getAttribute("Reckind")).toString();
+    	if (pageContext.getAttribute("Reckind")!=null)
+    		{cprkind = cprkind + (pageContext.getAttribute("Reckind")).toString();}
     	String cpunit = ""; 
-    	cpunit = cpunit + (pageContext.getAttribute("unit")).toString(); 
+    	if (pageContext.getAttribute("unit")!=null)
+    		{cpunit = cpunit + (pageContext.getAttribute("unit")).toString(); }
     	
     	String cpvalidF = ""; 
     	LocalDateTime validFromDate=null;
@@ -72,11 +78,14 @@ JSONObject SchedulePeriod;
 		cpvalidT = "null";
 		
 	String cpduration = ""; 
-    	cpduration = cpduration + (pageContext.getAttribute("duration")).toString();
+	if (pageContext.getAttribute("duration")!=null)
+    		{cpduration = cpduration + (pageContext.getAttribute("duration")).toString();}
     	String cprate = ""; 
-    	cprate = cprate + (pageContext.getAttribute("minRate")).toString(); 
+    	if (pageContext.getAttribute("minRate")!=null)
+    		{cprate = cprate + (pageContext.getAttribute("minRate")).toString(); }
     	String cpnote = ""; 
-    	cpnote = cpnote + (String)pageContext.getAttribute("note");
+    	if (pageContext.getAttribute("note")!=null)
+    		{cpnote = cpnote + (String)pageContext.getAttribute("note");}
     	
     	String cpstart = ""; 
     	LocalDateTime startScheduleDate=null;
